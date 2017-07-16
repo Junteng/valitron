@@ -1240,6 +1240,30 @@ class ValidateTest extends BaseTestCase
         $this->assertFalse($v3->validate());
         $this->assertNotEmpty($v3->errors());
     }
+
+    public function testValidateRequiredForEmptyOrNull(){
+
+        $v = new Validator(array('foo'=>null));
+        $v->rule('required', 'foo');
+        $this->assertFalse($v->validate());
+
+        $v2 = new Validator(array('foo'=>null));
+        $v2->rule('required', 'foo', true);
+        $this->assertTrue($v2->validate());
+    }
+    public function testValidateRequiredForEmptyOrNullAlternative(){
+        $v = new Validator(array('foo'=>null));
+        $v->rules([
+            'required'=>['foo']
+        ]);
+        $this->assertFalse($v->validate());
+
+        $v2 = new Validator(array('foo'=>null));
+        $v->rules([
+            'required'=>['foo', true]
+        ]);
+        $this->assertTrue($v2->validate());
+    }
 }
 
 function sampleFunctionCallback($field, $value, array $params) {

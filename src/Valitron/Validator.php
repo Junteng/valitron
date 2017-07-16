@@ -145,15 +145,14 @@ class Validator
      * @param  mixed  $value
      * @return bool
      */
-    protected function validateRequired($field, $value)
+    protected function validateRequired($field, $value, array $params = array())
     {
-        if (is_null($value)) {
-            return false;
-        } elseif (is_string($value) && trim($value) === '') {
-            return false;
+        if (isset($params[0]) && (bool) $params[0]){
+            return true;
+        } else {
+            return ! empty($value);
         }
 
-        return true;
     }
 
     /**
@@ -892,7 +891,7 @@ class Validator
         if (is_array($identifiers) && count($identifiers) === 0) {
             return array($data, false);
         }
-        
+
         // Catches the case where the data isn't an array or object
         if (is_scalar($data)) {
             return array(NULL, false);
