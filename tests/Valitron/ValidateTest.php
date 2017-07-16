@@ -48,7 +48,18 @@ class ValidateTest extends BaseTestCase
         $v->rule('required', 'name');
         $this->assertTrue($v->validate());
     }
+    public function testRequiredEdgeCases()
+    {
+        $v = new Validator(array(
+            'zero'=>0,
+            'zero_txt' => '0',
+            'false'=>false,
+            'empty_array'=>array()
+        ));
 
+        $v->rule('required', array('zero', 'zero_txt', 'false', 'empty_array'));
+        $this->assertTrue($v->validate());
+    }
     public function testRequiredNonExistentField()
     {
         $v = new Validator(array('name' => 'Chester Tester'));
@@ -1277,7 +1288,7 @@ class ValidateTest extends BaseTestCase
         $this->assertFalse($v3->validate());
 
         $v3=  new Validator(array('foo'=>array()));
-        $v3->rule('required', 'foo');
+        $v3->rule('required', 'foo.bar');
         $this->assertFalse($v3->validate());
 
     }
@@ -1294,6 +1305,8 @@ class ValidateTest extends BaseTestCase
         ));
         $this->assertTrue($v2->validate());
     }
+
+
 }
 
 function sampleFunctionCallback($field, $value, array $params) {

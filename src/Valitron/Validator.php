@@ -151,11 +151,16 @@ class Validator
 
         if (isset($params[0]) && (bool) $params[0]){
             $find = $this->getPart($this->_fields, explode('.', $field), true);
-
             return $find[1];
-        } else {
-            return ! empty($value);
         }
+
+        if (is_null($value)){
+            return false;
+        }
+        if (is_string($value) && trim($value) === '') {
+            return false;
+        }
+        return true;
     }
 
     /**
