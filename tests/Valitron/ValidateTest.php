@@ -1242,14 +1242,44 @@ class ValidateTest extends BaseTestCase
     }
 
     public function testValidateRequiredForEmptyOrNull(){
-
-        $v = new Validator(array('foo'=>null));
+        
+        $v = new Validator(array('foo'=>null, 'bar'=>''));
         $v->rule('required', 'foo');
+        $v->rule('required', 'bar');
         $this->assertFalse($v->validate());
 
-        $v2 = new Validator(array('foo'=>null));
-        $v2->rule('required', 'foo', true);
+        $v = new Validator(array('foo'=>null, 'bar'=>''));
+        $v->rule('required', 'foo', true);
+        $v->rule('required', 'bar', true);
+        $this->assertTrue($v->validate());
+
+        $v2 = new Validator(
+            array(
+                'foo'=>array('bar'=>null)
+            )
+        );
+        $v2->rule('required', 'foo.bar');
+        $this->assertFalse($v2->validate());
+
+        $v2 = new Validator(
+            array(
+                'foo'=>array(
+                    'bar'=>null
+                )
+            )
+        );
+        $v2->rule('required', 'foo.bar', true);
         $this->assertTrue($v2->validate());
+
+        //make sure it still fails for fields that aren't set
+        $v3=  new Validator(array());
+        $v3->rule('required', 'foo', true);
+        $this->assertFalse($v3->validate());
+
+        $v3=  new Validator(array('foo'=>array()));
+        $v3->rule('required', 'foo');
+        $this->assertFalse($v3->validate());
+
     }
     public function testValidateRequiredForEmptyOrNullAlternative(){
         $v = new Validator(array('foo'=>null));

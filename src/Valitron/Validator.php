@@ -143,16 +143,19 @@ class Validator
      *
      * @param  string $field
      * @param  mixed  $value
+     * @param  array  $params   first parameter can be used to allow empty values
      * @return bool
      */
     protected function validateRequired($field, $value, array $params = array())
     {
+
         if (isset($params[0]) && (bool) $params[0]){
-            return true;
+            $find = $this->getPart($this->_fields, explode('.', $field), true);
+
+            return $find[1];
         } else {
             return ! empty($value);
         }
-
     }
 
     /**
@@ -885,7 +888,7 @@ class Validator
         $this->_labels = array();
     }
 
-    protected function getPart($data, $identifiers)
+    protected function getPart($data, $identifiers, $allow_empty = false)
     {
         // Catches the case where the field is an array of discrete values
         if (is_array($identifiers) && count($identifiers) === 0) {
@@ -903,7 +906,7 @@ class Validator
         if ($identifier === '*') {
             $values = array();
             foreach ($data as $row) {
-                list($value, $multiple) = $this->getPart($row, $identifiers);
+                list($value, $multiple) = $this->getPart($row, $identifiers, $allow_empty);
                 if ($multiple) {
                     $values = array_merge($values, $value);
                 } else {
@@ -916,19 +919,29 @@ class Validator
 
         // Dead end, abort
         elseif ($identifier === NULL || ! isset($data[$identifier])) {
+
+            if ($allow_empty){
+                //when empty values are allowed, we only care if the key exists
+                return array(null, array_key_exists($identifier, $data));
+            }
             return array(null, false);
         }
 
         // Match array element
         elseif (count($identifiers) === 0) {
+            if ($allow_empty){
+                //when empty values are allowed, we only care if the key exists
+                return array(null, array_key_exists($identifier, $data));
+            }
             return array($data[$identifier], false);
         }
 
         // We need to go deeper
         else {
-            return $this->getPart($data[$identifier], $identifiers);
+            return $this->getPart($data[$identifier], $identifiers, $allow_empty);
         }
     }
+
 
     /**
      * Run validations and return boolean result
