@@ -1284,13 +1284,13 @@ class ValidateTest extends BaseTestCase
     public function testValidateRequiredForEmptyOrNullAlternative(){
         $v = new Validator(array('foo'=>null));
         $v->rules([
-            'required'=>['foo']
+            'required'=>array('foo')
         ]);
         $this->assertFalse($v->validate());
 
         $v2 = new Validator(array('foo'=>null));
         $v->rules([
-            'required'=>['foo', true]
+            'required'=>array('foo', true)
         ]);
         $this->assertTrue($v2->validate());
     }
